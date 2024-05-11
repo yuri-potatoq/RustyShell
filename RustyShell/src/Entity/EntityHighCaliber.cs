@@ -416,7 +416,6 @@ namespace RustyShell {
 
 
                     return this.entityPartitioning.GetNearestInteractableEntity(this.SidedPos.XYZ, 5f, (e) => {
-
                         if (e.EntityId == this.EntityId) return true;
                         if (e.SelectionBox.ToDouble().Translate(e.ServerPos.XYZ).IntersectsOrTouches(projectileBox.ToDouble())) {
 
