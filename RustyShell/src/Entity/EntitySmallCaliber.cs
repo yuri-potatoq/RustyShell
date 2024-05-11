@@ -132,7 +132,6 @@ namespace RustyShell {
 
                 private void IsColliding() {
 
-                    this.SidedPos.Motion.Set(0, 0, 0);
                     if (!this.stuck
                         && this.Api.Side.IsServer()
                         && this.msSinceCollide > 500
@@ -162,8 +161,8 @@ namespace RustyShell {
                 /// Checks collision with entities
                 /// </summary>
                 /// <returns></returns>
-                private bool CheckEntityCollision() {
-
+                private bool CheckEntityCollision()
+                {
                     if (this.Api.Side.IsClient()
                         || this.msSinceCollide   <  250
                         || this.ServerPos.Motion == Vec3d.Zero
@@ -180,22 +179,16 @@ namespace RustyShell {
                     else                            projectileBox.Z2 += 1.5f * motion.Z;
 
                     return this.entityPartitioning.GetNearestInteractableEntity(this.SidedPos.XYZ, 5f, (e) => {
-
-                        if (e.EntityId == this.EntityId) return false;
-
-                        Cuboidf translatedBox = e.SelectionBox.Translate(e.ServerPos.XYZ);
-                        if (   translatedBox.X2 >= projectileBox.X1
-                            && translatedBox.X1 <= projectileBox.X2
-                            && translatedBox.Y2 >= projectileBox.Y1
-                            && translatedBox.Y1 <= projectileBox.Y2
-                            && translatedBox.Z2 >= projectileBox.Z1
-                            && translatedBox.Z1 <= projectileBox.Z2
-                        ) {
-
-                            this.ImpactOnEntity(e);
-                            return true;
-
-                        } else return false;
+                        if (e.EntityId == this.EntityId) return true;
+                        
+                        if (!e.SelectionBox
+                            .ToDouble()
+                            .Translate(e.ServerPos.XYZ)
+                            .IntersectsOrTouches(projectileBox.ToDouble())
+                        ) return true;
+                        
+                        this.ImpactOnEntity(e);
+                        return false;
                     }) != null;
                 } // bool ..
     } // class ..
